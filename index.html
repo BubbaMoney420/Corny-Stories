@@ -47,8 +47,14 @@
     }
     h1.story-title {
       font-size: 1.8rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.25rem;
       color: #6c63ff;
+    }
+    .author {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 1rem;
     }
     .story-content {
       white-space: pre-wrap;
@@ -59,6 +65,7 @@
       padding: 1rem 1.5rem;
       border-radius: 5px;
       box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+      margin-bottom: 1rem;
     }
     form {
       display: flex;
@@ -75,6 +82,7 @@
       border: 1.5px solid #ccc;
       border-radius: 4px;
       resize: vertical;
+      min-height: 120px;
     }
     textarea {
       min-height: 150px;
@@ -93,40 +101,44 @@
     button.submit-btn:hover {
       background-color: #5548c8;
     }
+    .stories-list {
+      margin-top: 2rem;
+    }
     .story-item {
       border: 1px solid #ddd;
       border-radius: 5px;
       padding: 1rem;
-      margin: 1rem 0;
+      margin-bottom: 1rem;
       background: #fff;
       box-shadow: 0 1px 4px rgb(0 0 0 / 0.05);
+      position: relative;
     }
     .story-item h3 {
       margin: 0 0 0.5rem 0;
       color: #6c63ff;
     }
+    .story-item .author {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
     .delete-btn {
-      background-color: #e74c3c;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff4d4d;
       border: none;
       color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      font-weight: bold;
       cursor: pointer;
-      font-size: 0.9rem;
-      float: right;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      transition: background-color 0.3s ease;
     }
     .delete-btn:hover {
-      background-color: #c0392b;
-    }
-    .audio-btn {
-      background-color: #6c63ff;
-      border: none;
-      color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
+      background-color: #d93636;
     }
     footer {
       text-align: center;
@@ -135,6 +147,20 @@
       border-top: 1px solid #ddd;
       color: #777;
       font-size: 0.9rem;
+    }
+    .audio-btn {
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.3rem 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    .audio-btn:hover {
+      background-color: #5548c8;
     }
   </style>
 </head>
@@ -146,13 +172,13 @@
   </nav>
 
   <main>
-    <!-- Main story and added stories -->
+    <!-- Story content container -->
     <section id="storySection">
       <h1 class="story-title">Three's a Fever</h1>
-      <button class="audio-btn" onclick="speakStory()">🔊 Listen to Full Story</button>
+      <div class="author">By Addisyn Holley, Jordan Schaller, and Donovan Schaller</div>
+      <button class="audio-btn" id="playMainAudio">▶️ Play Story Audio</button>
       <div class="story-content" id="storyContent">
-        <!-- original story text will remain here -->
-       The music pulsed low through the dim living room, amber lights painting soft shadows on the walls. Sophia sat curled into the corner of the couch, legs crossed, wine glass in hand. Her gaze flicked between the two across the room — Gauge, effortlessly cool, leaning against the doorframe, and Justin, sprawled across the armchair like he owned the place.
+The music pulsed low through the dim living room, amber lights painting soft shadows on the walls. Sophia sat curled into the corner of the couch, legs crossed, wine glass in hand. Her gaze flicked between the two across the room — Gauge, effortlessly cool, leaning against the doorframe, and Justin, sprawled across the armchair like he owned the place.
 
 None of them said much, but the energy was thick. Tangible.
 
@@ -439,31 +465,38 @@ Sophia: “You’re both disasters. And I adore you.”
 They kissed. All three. Genuinely. No chaos. No blender in the background. Just sun, sweat, and something terrifyingly close to growth.
 
 ✨ Bonus Scene: Chaz’s Wisdom
-Later that night, over drinks, Chaz approached them slowly.
+Later that night, Chaz whispered to Sophia:
 
-“You are three stars in one orbit. May your gravity never be jealous.”
+“Love is like a cactus — beautiful, painful, and worth every prick.”
 
-And then he vanished into the sea. Like a hot, confusing cryptid.
-      </div>
+Sophia laughed, knowing the next chapter was theirs to write.
 
-      <!-- Render added stories under main story -->
-      <div class="stories-list" id="mainAddedStories">
-        <h2>Added Stories:</h2>
-        <div id="mainStoriesContainer">
-          <!-- dynamically added stories will appear here too -->
-        </div>
       </div>
     </section>
 
-    <!-- Add story form -->
-    <section id="addStorySection" style="display:none;">
-      <h1>Add a New Story</h1>
+    <!-- Additional Stories Section -->
+    <section id="additionalStoriesSection" style="display:none;">
+      <h2>More Stories</h2>
+      <div id="additionalStoriesList" class="stories-list"></div>
+    </section>
+
+    <!-- Create Story Form -->
+    <section id="createStorySection" style="display:none;">
+      <h2>Add Your Story</h2>
       <form id="storyForm">
-        <label for="titleInput">Story Title:</label>
-        <input type="text" id="titleInput" name="title" required />
-        <label for="contentInput">Story Content:</label>
-        <textarea id="contentInput" name="content" required></textarea>
-        <button type="submit" class="submit-btn">Add Story</button>
+        <label for="firstName">First Name (Author):</label>
+        <input type="text" id="firstName" name="firstName" required />
+
+        <label for="lastName">Last Name (Author):</label>
+        <input type="text" id="lastName" name="lastName" required />
+
+        <label for="storyTitle">Story Title:</label>
+        <input type="text" id="storyTitle" name="storyTitle" required />
+
+        <label for="storyText">Story Text:</label>
+        <textarea id="storyText" name="storyText" required></textarea>
+
+        <button type="submit" class="submit-btn">Submit Story</button>
       </form>
     </section>
   </main>
@@ -473,84 +506,189 @@ And then he vanished into the sea. Like a hot, confusing cryptid.
   </footer>
 
   <script>
+    // Elements
     const btnStory = document.getElementById('btnStory');
     const btnAddStory = document.getElementById('btnAddStory');
+
     const storySection = document.getElementById('storySection');
-    const addStorySection = document.getElementById('addStorySection');
+    const additionalStoriesSection = document.getElementById('additionalStoriesSection');
+    const createStorySection = document.getElementById('createStorySection');
+    const additionalStoriesList = document.getElementById('additionalStoriesList');
+
     const storyForm = document.getElementById('storyForm');
-    const mainStoriesContainer = document.getElementById('mainStoriesContainer');
 
-    let addedStories = JSON.parse(localStorage.getItem('addedStories')) || [];
+    // Audio playback for main story (dummy example using Web Speech API)
+    const playMainAudioBtn = document.getElementById('playMainAudio');
+    let mainAudioUtterance;
+    playMainAudioBtn.addEventListener('click', () => {
+      if ('speechSynthesis' in window) {
+        if (speechSynthesis.speaking) {
+          speechSynthesis.cancel();
+          playMainAudioBtn.textContent = '▶️ Play Story Audio';
+          return;
+        }
+        playMainAudioBtn.textContent = '⏸️ Pause Story Audio';
 
+        const storyText = document.getElementById('storyContent').textContent;
+        mainAudioUtterance = new SpeechSynthesisUtterance(storyText);
+        mainAudioUtterance.onend = () => {
+          playMainAudioBtn.textContent = '▶️ Play Story Audio';
+        };
+        speechSynthesis.speak(mainAudioUtterance);
+      } else {
+        alert('Speech synthesis not supported in your browser.');
+      }
+    });
+
+    // Navigation button handlers
     btnStory.addEventListener('click', () => {
       btnStory.classList.add('active');
       btnAddStory.classList.remove('active');
-      storySection.style.display = 'block';
-      addStorySection.style.display = 'none';
-      renderAddedStories();
+
+      storySection.style.display = '';
+      additionalStoriesSection.style.display = '';
+      createStorySection.style.display = 'none';
+
+      renderAdditionalStories();
     });
 
     btnAddStory.addEventListener('click', () => {
       btnAddStory.classList.add('active');
       btnStory.classList.remove('active');
+
       storySection.style.display = 'none';
-      addStorySection.style.display = 'block';
+      additionalStoriesSection.style.display = 'none';
+      createStorySection.style.display = '';
     });
 
-    function renderAddedStories() {
-      if (mainStoriesContainer) {
-        mainStoriesContainer.innerHTML = '';
-        if (addedStories.length === 0) {
-          mainStoriesContainer.innerHTML = '<p>No stories added yet.</p>';
-          return;
-        }
+    // Story storage & retrieval
+    // Stories stored as array of objects { id, firstName, lastName, title, text }
+    const STORAGE_KEY = 'cornyStoriesUserStories';
 
-        addedStories.forEach((story, index) => {
-          const div = document.createElement('div');
-          div.classList.add('story-item');
-          div.innerHTML = `
-            <button class="delete-btn" onclick="deleteStory(${index})">Delete</button>
-            <h3>${story.title}</h3>
-            <p>${story.content.replace(/\n/g, '<br>')}</p>
-          `;
-          mainStoriesContainer.appendChild(div);
+    function getStoredStories() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveStories(stories) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stories));
+    }
+
+    function addStory(story) {
+      const stories = getStoredStories();
+      stories.push(story);
+      saveStories(stories);
+    }
+
+    function deleteStory(id) {
+      let stories = getStoredStories();
+      stories = stories.filter(s => s.id !== id);
+      saveStories(stories);
+      renderAdditionalStories();
+    }
+
+    // Render additional stories list
+    function renderAdditionalStories() {
+      const stories = getStoredStories();
+      additionalStoriesList.innerHTML = '';
+
+      if (stories.length === 0) {
+        additionalStoriesList.textContent = 'No additional stories added yet.';
+        return;
+      }
+
+      stories.forEach(story => {
+        const storyDiv = document.createElement('div');
+        storyDiv.className = 'story-item';
+
+        const title = document.createElement('h3');
+        title.textContent = story.title;
+        storyDiv.appendChild(title);
+
+        const author = document.createElement('div');
+        author.className = 'author';
+        author.textContent = `By ${story.firstName} ${story.lastName}`;
+        storyDiv.appendChild(author);
+
+        // Audio play button for this story
+        const audioBtn = document.createElement('button');
+        audioBtn.className = 'audio-btn';
+        audioBtn.textContent = '▶️ Play Story Audio';
+        let utterance;
+        audioBtn.addEventListener('click', () => {
+          if ('speechSynthesis' in window) {
+            if (speechSynthesis.speaking) {
+              speechSynthesis.cancel();
+              audioBtn.textContent = '▶️ Play Story Audio';
+              return;
+            }
+            audioBtn.textContent = '⏸️ Pause Story Audio';
+            utterance = new SpeechSynthesisUtterance(story.text);
+            utterance.onend = () => {
+              audioBtn.textContent = '▶️ Play Story Audio';
+            };
+            speechSynthesis.speak(utterance);
+          } else {
+            alert('Speech synthesis not supported in your browser.');
+          }
         });
-      }
+        storyDiv.appendChild(audioBtn);
+
+        const content = document.createElement('div');
+        content.className = 'story-content';
+        content.textContent = story.text;
+        storyDiv.appendChild(content);
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.title = 'Delete this story (only your own stories can be deleted)';
+        deleteBtn.addEventListener('click', () => {
+          if (confirm(`Delete story "${story.title}" by ${story.firstName} ${story.lastName}?`)) {
+            deleteStory(story.id);
+          }
+        });
+        storyDiv.appendChild(deleteBtn);
+
+        additionalStoriesList.appendChild(storyDiv);
+      });
     }
 
-    function deleteStory(index) {
-      if (confirm('Delete this story?')) {
-        addedStories.splice(index, 1);
-        localStorage.setItem('addedStories', JSON.stringify(addedStories));
-        renderAddedStories();
-      }
-    }
-
-    storyForm.addEventListener('submit', (e) => {
+    // Handle story form submission
+    storyForm.addEventListener('submit', e => {
       e.preventDefault();
-      const title = e.target.title.value.trim();
-      const content = e.target.content.value.trim();
-      if (!title || !content) return;
 
-      addedStories.push({ title, content });
-      localStorage.setItem('addedStories', JSON.stringify(addedStories));
-      storyForm.reset();
+      const firstName = storyForm.firstName.value.trim();
+      const lastName = storyForm.lastName.value.trim();
+      const title = storyForm.storyTitle.value.trim();
+      const text = storyForm.storyText.value.trim();
+
+      if (!firstName || !lastName || !title || !text) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      // Create new story object with unique id (timestamp + random)
+      const newStory = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        firstName,
+        lastName,
+        title,
+        text
+      };
+
+      addStory(newStory);
       alert('Story added!');
-      renderAddedStories();
+
+      storyForm.reset();
+
+      // Automatically switch back to main story tab and show additional stories
+      btnStory.click();
     });
 
-    function speakStory() {
-      const content = document.getElementById('storyContent').innerText;
-      const utterance = new SpeechSynthesisUtterance(content);
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      utterance.lang = 'en-US';
-      speechSynthesis.cancel(); // stop any existing
-      speechSynthesis.speak(utterance);
-    }
-
-    // Initial render
-    renderAddedStories();
+    // Initialize page
+    renderAdditionalStories();
   </script>
 </body>
 </html>
