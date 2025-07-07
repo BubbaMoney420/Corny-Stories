@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Corny Stories</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fefefe;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background: #6c63ff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+    nav {
+      display: flex;
+      background: #f0f0f5;
+      border-bottom: 1px solid #ddd;
+      justify-content: center;
+    }
+    nav button {
+      background: none;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    nav button:hover, nav button.active {
+      background-color: #6c63ff;
+      color: white;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1.story-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #6c63ff;
+    }
+    .story-content {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      font-size: 1.1rem;
+      background: #fafafa;
+      border-left: 5px solid #6c63ff;
+      padding: 1rem 1.5rem;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    label {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    input[type="text"], textarea {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1.5px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+      min-height: 120px;
+    }
+    textarea {
+      min-height: 150px;
+    }
+    button.submit-btn {
+      max-width: 150px;
+      padding: 0.7rem 1rem;
+      background-color: #6c63ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+    button.submit-btn:hover {
+      background-color: #5548c8;
+    }
+    .stories-list {
+      margin-top: 2rem;
+    }
+    .story-item {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #fff;
+      box-shadow: 0 1px 4px rgb(0 0 0 / 0.05);
+    }
+    .story-item h3 {
+      margin: 0 0 0.5rem 0;
+      color: #6c63ff;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 3rem;
+      border-top: 1px solid #ddd;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>Corny Stories</header>
+  <nav>
+    <button id="btnStory" class="active">Three's a Fever</button>
+    <button id="btnAddStory">Add More Stories</button>
+  </nav>
+
+  <main>
+    <!-- Story content container -->
+    <section id="storySection">
+      <h1 class="story-title">Three's a Fever</h1>
+      <div class="story-content" id="storyContent">
+Sophia was always the life of the party, but tonight something felt different. Gauge noticed her unease and decided to check in.
+
+"Are you okay?" he asked gently.
+
+Sophia hesitated, then admitted, "I think I’ve got a fever."
+
+Before they could react, Justin barged in, causing a stir.
+
+The night spiraled into chaos — a fever, unexpected guests, and secrets unraveling. In the end, the trio learned that sometimes the wildest moments make the best stories.
+      </div>
+    </section>
+
+    <!-- Add story section -->
+    <section id="addStorySection" style="display:none;">
+      <h1>Add a New Story</h1>
+      <form id="storyForm">
+        <label for="titleInput">Story Title:</label>
+        <input type="text" id="titleInput" name="title" placeholder="Enter story title" required />
+
+        <label for="contentInput">Story Content:</label>
+        <textarea id="contentInput" name="content" placeholder="Enter story content" required></textarea>
+
+        <button type="submit" class="submit-btn">Add Story</button>
+      </form>
+
+      <div class="stories-list" id="storiesList">
+        <h2>Added Stories:</h2>
+        <div id="addedStoriesContainer">
+          <!-- dynamically added stories will appear here -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Corny Stories. All rights reserved.
+  </footer>
+
+  <script>
+    // Elements
+    const btnStory = document.getElementById('btnStory');
+    const btnAddStory = document.getElementById('btnAddStory');
+    const storySection = document.getElementById('storySection');
+    const addStorySection = document.getElementById('addStorySection');
+    const storyForm = document.getElementById('storyForm');
+    const addedStoriesContainer = document.getElementById('addedStoriesContainer');
+
+    // Store added stories in localStorage so they persist on refresh
+    let addedStories = JSON.parse(localStorage.getItem('addedStories')) || [];
+
+    // Toggle tabs
+    btnStory.addEventListener('click', () => {
+      btnStory.classList.add('active');
+      btnAddStory.classList.remove('active');
+      storySection.style.display = 'block';
+      addStorySection.style.display = 'none';
+    });
+
+    btnAddStory.addEventListener('click', () => {
+      btnAddStory.classList.add('active');
+      btnStory.classList.remove('active');
+      addStorySection.style.display = 'block';
+      storySection.style.display = 'none';
+      renderAddedStories();
+    });
+
+    // Render added stories
+    function renderAddedStories() {
+      if (addedStories.length === 0) {
+        addedStoriesContainer.innerHTML = '<p>No stories added yet. Use the form above to add one!</p>';
+        return;
+      }
+      addedStoriesContainer.innerHTML = '';
+      addedStories.forEach((story, idx) => {
+        const div = document.createElement('div');
+        div.classList.add('story-item');
+        div.innerHTML = `
+          <h3>${story.title}</h3>
+          <p>${story.content.replace(/\n/g, '<br>')}</p>
+        `;
+        addedStoriesContainer.appendChild(div);
+      });
+    }
+
+    // Handle new story submission
+    storyForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const title = e.target.title.value.trim();
+      const content = e.target.content.value.trim();
+      if (!title || !content) return;
+
+      addedStories.push({title, content});
+      localStorage.setItem('addedStories', JSON.stringify(addedStories));
+      storyForm.reset();
+      renderAddedStories();
+      alert('Story added successfully!');
+    });
+
+    // Initial load - show main story tab by default
+    btnStory.click();
+  </script>
+</body>
+</html>
